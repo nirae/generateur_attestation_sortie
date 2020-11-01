@@ -1,0 +1,13 @@
+toto:
+  first_name: prénom
+  last_name: nom
+  birthday: 01/01/1990
+  placeofbirth: Place of birth
+  address: 00 rue exemple
+  zipcode: 75000
+  city: City
+  reason: achats
+  send:
+    telegram:
+      token: '000000000:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+      chat_id: '0000000000'

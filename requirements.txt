@@ -1,0 +1,5 @@
+python-telegram-bot
+selenium
+pyyaml
+marshmallow
+argparse
