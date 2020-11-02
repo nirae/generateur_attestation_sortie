@@ -62,7 +62,7 @@ username:
   reason: achats
 ```
 
-L'attestation générée se nommera `username_attestation.yml`
+L'attestation générée se nommera `username_attestation.pdf`
 
 La liste des `reasons` est:
 
