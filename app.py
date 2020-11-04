@@ -17,12 +17,14 @@ import argparse as arg
 class Generator(object):
 
     def __init__(self):
+        os.environ['LANG'] = "fr_FR.UTF-8"
         self.url = "https://media.interieur.gouv.fr/deplacement-covid-19/"
         options = webdriver.ChromeOptions()
         self.dir_path = os.path.dirname(os.path.realpath(__file__))
         options.add_experimental_option("prefs", {"download.default_directory": self.dir_path, "intl.accept_languages": "fr"})
         options.add_argument('headless')
         options.add_argument('no-sandbox')
+        options.add_argument('lang=fr')
         self.driver = webdriver.Chrome(options=options)
 
     def run(self, config):
