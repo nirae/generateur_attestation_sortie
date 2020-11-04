@@ -34,9 +34,11 @@ l'option `-c` permet de préciser le nom du fichier de configuration yaml à uti
 
 ### Classique
 
+Faire bien attention aux locales et timezone pour générer date et heure de sortie /!\
+
 Chrome/Chromium ainsi que le `chromedriver` ou `chromium-driver` doit etre installé.
 
-`$ apt-get install chromium chromium-driver`
+`$ apt-get install chromium chromium-driver chromium-l10n`
 
 Installer les dépendances python
 
