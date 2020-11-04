@@ -20,7 +20,7 @@ class Generator(object):
         self.url = "https://media.interieur.gouv.fr/deplacement-covid-19/"
         options = webdriver.ChromeOptions()
         self.dir_path = os.path.dirname(os.path.realpath(__file__))
-        options.add_experimental_option("prefs", {"download.default_directory": self.dir_path})
+        options.add_experimental_option("prefs", {"download.default_directory": self.dir_path, "intl.accept_languages": "en,en_US"})
         options.add_argument('headless')
         options.add_argument('no-sandbox')
         self.driver = webdriver.Chrome(options=options)
@@ -94,7 +94,8 @@ class Config(object):
 
     def get_current_date(self):
         today = datetime.today()
-        return today.strftime("%d/%m/%Y")
+        # return today.strftime("%d/%m/%Y")
+        return today.strftime("%m/%d/%Y")
     
     def get_current_time(self):
         today = datetime.today()
