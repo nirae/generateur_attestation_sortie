@@ -26,7 +26,7 @@ class Generator(object):
         options.add_argument('lang=fr')
         self.driver = webdriver.Chrome(options=options)
 
-    def run(self, config):
+    def run(self, config, output=None):
         self.driver.get("https://media.interieur.gouv.fr/deplacement-covid-19/")
         # form
         self.driver.find_element_by_id("field-firstname").send_keys(config.first_name)
@@ -64,8 +64,12 @@ class Generator(object):
         if not file:
             print("Bad informations for the form")
             return None
-        filename = self.dir_path + "%s_attestation.pdf" % config.user
+        if not output:
+            filename = self.dir_path + "%s_attestation.pdf" % config.user
+        else:
+            filename = os.path.abspath(output)
         os.rename(file[0], filename)
+        print("Le fichier %s a bien été créé" % filename)
         return filename
 
     def close(self):
@@ -188,9 +192,9 @@ class Sender(object):
         if self.send_option == 'telegram':
             self.send_telegram(filename)
 
-def main(config):
+def main(args):
     gen = Generator()
-    for conf in config:
+    for conf in args.config:
         with open(conf) as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
             f.close()
@@ -200,7 +204,7 @@ def main(config):
             schema = ConfigSchema()
             config = schema.load(data[user])
             print(vars(config))
-            filename = gen.run(config)
+            filename = gen.run(config, output=args.output)
             if not filename:
                 return
             if config.sender:
@@ -220,5 +224,11 @@ if __name__ == "__main__":
         default=['config.yml'],
         help='le/les fichier(s) de configuration (defaut: config.yml)'
     )
+    parser.add_argument(
+        '-o',
+        '--output',
+        type=str,
+        help="le nom de l'attestation (defaut: {user}_attestation.pdf)"
+    )
     args = parser.parse_args()
-    main(args.config)
+    main(args)
