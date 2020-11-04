@@ -19,7 +19,7 @@ class Generator(object):
     def __init__(self):
         self.url = "https://media.interieur.gouv.fr/deplacement-covid-19/"
         options = webdriver.ChromeOptions()
-        self.dir_path = os.path.dirname(os.path.realpath(__file__))
+        self.dir_path = os.getcwd() + '/'
         options.add_experimental_option("prefs", {"download.default_directory": self.dir_path})
         options.add_argument('headless')
         options.add_argument('no-sandbox')
@@ -59,13 +59,13 @@ class Generator(object):
         # button
         self.driver.find_element_by_id("generate-btn").click()
         time.sleep(1)
-        file = glob.glob("attestation-*.pdf")
+        file = glob.glob(self.dir_path + "attestation-*.pdf")
         if not file:
             print("Bad informations for the form")
             return None
-        filename = "%s_attestation.pdf" % config.user
+        filename = self.dir_path + "%s_attestation.pdf" % config.user
         os.rename(file[0], filename)
-        return self.dir_path + '/' + filename
+        return filename
 
     def close(self):
         self.driver.close()
