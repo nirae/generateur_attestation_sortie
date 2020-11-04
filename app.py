@@ -20,9 +20,10 @@ class Generator(object):
         self.url = "https://media.interieur.gouv.fr/deplacement-covid-19/"
         options = webdriver.ChromeOptions()
         self.dir_path = os.getcwd() + '/'
-        options.add_experimental_option("prefs", {"download.default_directory": self.dir_path})
+        options.add_experimental_option("prefs", {"download.default_directory": self.dir_path, "intl.accept_languages": "fr"})
         options.add_argument('headless')
         options.add_argument('no-sandbox')
+        options.add_argument('lang=fr')
         self.driver = webdriver.Chrome(options=options)
 
     def run(self, config):
@@ -98,7 +99,7 @@ class Config(object):
     
     def get_current_time(self):
         today = datetime.today()
-        return today.strftime("%I:%M%p")
+        return today.strftime("%H:%M")
 
 class ConfigSchema(Schema):
     available_reasons = [
@@ -160,7 +161,7 @@ class ConfigSchema(Schema):
 
     @validates('time')
     def validate_time(self, time):
-        rx = re.compile(r'^([0-9]{2}:[0-9]{2}(AM|PM))$')
+        rx = re.compile(r'^([0-9]{2}:[0-9]{2})$')
         match = rx.search(time)
         if not match:
             raise ValidationError("time not valid")
@@ -209,6 +210,8 @@ def main(config):
     gen.close()
 
 if __name__ == "__main__":
+    os.environ['LC_ALL'] = "fr_FR.UTF-8"
+
     parser = arg.ArgumentParser(description="Générateur d'attestation de sortie - utilise le site officiel media.interieur.gouv.fr/deplacement-covid-19/")
     parser.add_argument(
         '-c',
