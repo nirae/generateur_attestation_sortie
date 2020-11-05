@@ -19,13 +19,14 @@ class Generator(object):
     def __init__(self):
         self.url = "https://media.interieur.gouv.fr/deplacement-covid-19/"
         options = webdriver.ChromeOptions()
-        self.dir_path = os.path.dirname(os.path.realpath(__file__))
-        options.add_experimental_option("prefs", {"download.default_directory": self.dir_path})
+        self.dir_path = os.getcwd() + '/'
+        options.add_experimental_option("prefs", {"download.default_directory": self.dir_path, "intl.accept_languages": "fr"})
         options.add_argument('headless')
         options.add_argument('no-sandbox')
+        options.add_argument('lang=fr')
         self.driver = webdriver.Chrome(options=options)
 
-    def run(self, config):
+    def run(self, config, output=None):
         self.driver.get("https://media.interieur.gouv.fr/deplacement-covid-19/")
         # form
         self.driver.find_element_by_id("field-firstname").send_keys(config.first_name)
@@ -59,13 +60,17 @@ class Generator(object):
         # button
         self.driver.find_element_by_id("generate-btn").click()
         time.sleep(1)
-        file = glob.glob("attestation-*.pdf")
+        file = glob.glob(self.dir_path + "attestation-*.pdf")
         if not file:
             print("Bad informations for the form")
             return None
-        filename = "%s_attestation.pdf" % config.user
+        if not output:
+            filename = self.dir_path + "%s_attestation.pdf" % config.user
+        else:
+            filename = os.path.abspath(output)
         os.rename(file[0], filename)
-        return self.dir_path + '/' + filename
+        print("Le fichier %s a bien été créé" % filename)
+        return filename
 
     def close(self):
         self.driver.close()
@@ -98,7 +103,7 @@ class Config(object):
     
     def get_current_time(self):
         today = datetime.today()
-        return today.strftime("%I:%M%p")
+        return today.strftime("%H:%M")
 
 class ConfigSchema(Schema):
     available_reasons = [
@@ -160,7 +165,7 @@ class ConfigSchema(Schema):
 
     @validates('time')
     def validate_time(self, time):
-        rx = re.compile(r'^([0-9]{2}:[0-9]{2}(AM|PM))$')
+        rx = re.compile(r'^([0-9]{2}:[0-9]{2})$')
         match = rx.search(time)
         if not match:
             raise ValidationError("time not valid")
@@ -187,9 +192,9 @@ class Sender(object):
         if self.send_option == 'telegram':
             self.send_telegram(filename)
 
-def main(config):
+def main(args):
     gen = Generator()
-    for conf in config:
+    for conf in args.config:
         with open(conf) as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
             f.close()
@@ -199,7 +204,7 @@ def main(config):
             schema = ConfigSchema()
             config = schema.load(data[user])
             print(vars(config))
-            filename = gen.run(config)
+            filename = gen.run(config, output=args.output)
             if not filename:
                 return
             if config.sender:
@@ -209,6 +214,8 @@ def main(config):
     gen.close()
 
 if __name__ == "__main__":
+    os.environ['LC_ALL'] = "fr_FR.UTF-8"
+
     parser = arg.ArgumentParser(description="Générateur d'attestation de sortie - utilise le site officiel media.interieur.gouv.fr/deplacement-covid-19/")
     parser.add_argument(
         '-c',
@@ -217,5 +224,11 @@ if __name__ == "__main__":
         default=['config.yml'],
         help='le/les fichier(s) de configuration (defaut: config.yml)'
     )
+    parser.add_argument(
+        '-o',
+        '--output',
+        type=str,
+        help="le nom de l'attestation (defaut: {user}_attestation.pdf)"
+    )
     args = parser.parse_args()
-    main(args.config)
+    main(args)
