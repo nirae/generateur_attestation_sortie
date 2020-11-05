@@ -4,6 +4,10 @@ Ce générateur utilise le site officiel `media.interieur.gouv.fr/deplacement-co
 
 L'attestation est placée dans le repertoire courant et peut être envoyée par message **telegram**.
 
+## Projets basés sur cet outil
+
+- [Bot Discord](https://github.com/Nimon77/attestation-discord-bot)
+
 ## Utilisation
 
 ### Usage
