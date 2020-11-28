@@ -39,8 +39,8 @@ class Generator(object):
         self.driver.find_element_by_id("field-datesortie").send_keys(config.date)
         self.driver.find_element_by_id("field-heuresortie").send_keys(config.time)
         # checkboxs reasons
-        if config.reason == 'achats':
-            self.driver.find_element_by_id("checkbox-achats").click()
+        if config.reason == 'achats' or config.reason == 'culte' or config.reason == 'culturel':
+            self.driver.find_element_by_id("checkbox-achats_culturel_cultuel").click()
         elif config.reason == 'sante':
             self.driver.find_element_by_id("checkbox-sante").click()
         elif config.reason == 'famille':
@@ -108,6 +108,8 @@ class Config(object):
 class ConfigSchema(Schema):
     available_reasons = [
         'achats',
+        'culte',
+        'culturel',
         'sante',
         'famille',
         'travail',
