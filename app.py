@@ -14,10 +14,12 @@ import time
 from marshmallow import Schema, fields, validate, validates, post_load, ValidationError
 import argparse as arg
 
+
 class Generator(object):
 
     def __init__(self):
-        self.url = "https://media.interieur.gouv.fr/deplacement-covid-19/"
+        # self.url = "https://media.interieur.gouv.fr/deplacement-covid-19/"
+        self.url = "https://media.interieur.gouv.fr/attestation-couvre-feu-covid-19/"
         options = webdriver.ChromeOptions()
         self.dir_path = os.getcwd() + '/'
         options.add_experimental_option("prefs", {"download.default_directory": self.dir_path, "intl.accept_languages": "fr"})
@@ -27,7 +29,8 @@ class Generator(object):
         self.driver = webdriver.Chrome(options=options)
 
     def run(self, config, output=None):
-        self.driver.get("https://media.interieur.gouv.fr/deplacement-covid-19/")
+        # self.driver.get("https://media.interieur.gouv.fr/deplacement-covid-19/")
+        self.driver.get(self.url)
         # form
         self.driver.find_element_by_id("field-firstname").send_keys(config.first_name)
         self.driver.find_element_by_id("field-lastname").send_keys(config.last_name)
@@ -39,9 +42,7 @@ class Generator(object):
         self.driver.find_element_by_id("field-datesortie").send_keys(config.date)
         self.driver.find_element_by_id("field-heuresortie").send_keys(config.time)
         # checkboxs reasons
-        if config.reason == 'achats' or config.reason == 'culte' or config.reason == 'culturel':
-            self.driver.find_element_by_id("checkbox-achats_culturel_cultuel").click()
-        elif config.reason == 'sante':
+        if config.reason == 'sante':
             self.driver.find_element_by_id("checkbox-sante").click()
         elif config.reason == 'famille':
             self.driver.find_element_by_id("checkbox-famille").click()
@@ -49,14 +50,14 @@ class Generator(object):
             self.driver.find_element_by_id("checkbox-travail").click()
         elif config.reason == 'handicap':
             self.driver.find_element_by_id("checkbox-handicap").click()
-        elif config.reason == 'sports_animaux':
-            self.driver.find_element_by_id("checkbox-sport_animaux").click()
+        elif config.reason == 'transits':
+            self.driver.find_element_by_id("checkbox-transits").click()
         elif config.reason == 'convocation':
             self.driver.find_element_by_id("checkbox-convocation").click()
         elif config.reason == 'missions':
             self.driver.find_element_by_id("checkbox-missions").click()
-        elif config.reason == 'enfants':
-            self.driver.find_element_by_id("checkbox-enfants").click()
+        elif config.reason == 'animaux':
+            self.driver.find_element_by_id("checkbox-animaux").click()
         # button
         self.driver.find_element_by_id("generate-btn").click()
         time.sleep(1)
@@ -107,17 +108,14 @@ class Config(object):
 
 class ConfigSchema(Schema):
     available_reasons = [
-        'achats',
-        'culte',
-        'culturel',
         'sante',
         'famille',
         'travail',
         'handicap',
-        'sports_animaux',
+        'animaux',
         'convocation',
         'missions',
-        'enfants'
+        'transits'
     ]
     senders = ['telegram']
     telegram_options = ['chat_id', 'token']
