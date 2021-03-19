@@ -66,21 +66,33 @@ username:
   zipcode: 75000
   city: City
   reason: achats
+  context: confinement-weekend
 ```
 
 L'attestation générée se nommera `username_attestation.pdf`
 
+La liste des `context` est:
+
+- `couvre-feu`
+- `confinement-weekend`
+- `confinement`
+
 La liste des `reasons` est:
 
-- `achats`
 - `sante`
 - `famille`
 - `travail`
 - `handicap`
-- `sports_animaux`
+- `animaux`
 - `convocation`
 - `missions`
-- `enfants`
+- `transits`
+- `achats`
+- `sport`
+- `rassemblement`
+- `demarche`
+
+En fonction du type de contexte, certaines peuvent ne pas etre disponibles et générer une erreur.
 
 Il est possible de configurer plusieurs utilisateurs:
 

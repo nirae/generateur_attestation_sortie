@@ -31,6 +31,11 @@ class Generator(object):
     def run(self, config, output=None):
         # self.driver.get("https://media.interieur.gouv.fr/deplacement-covid-19/")
         self.driver.get(self.url)
+        # context selection button
+        if config.context == 'couvre-feu':
+            self.driver.find_element_by_class_name("curfew-button").click()
+        elif config.context == 'confinement-weekend' or config.context == 'confinement':
+            self.driver.find_element_by_class_name("quarantine-button").click()
         # form
         self.driver.find_element_by_id("field-firstname").send_keys(config.first_name)
         self.driver.find_element_by_id("field-lastname").send_keys(config.last_name)
@@ -53,11 +58,21 @@ class Generator(object):
         elif config.reason == 'transits':
             self.driver.find_element_by_id("checkbox-transits").click()
         elif config.reason == 'convocation':
-            self.driver.find_element_by_id("checkbox-convocation").click()
+            self.driver.find_element_by_id("checkbox-judiciaire").click()
         elif config.reason == 'missions':
             self.driver.find_element_by_id("checkbox-missions").click()
         elif config.reason == 'animaux':
             self.driver.find_element_by_id("checkbox-animaux").click()
+        
+        if config.context == 'confinement-weekend' or config.context == 'confinement':
+            if config.reason == 'achats':
+                self.driver.find_element_by_id("checkbox-courses").click()
+            elif config.reason == 'sport':
+                self.driver.find_element_by_id("checkbox-sport").click()
+            elif config.reason == 'rassemblement':
+                self.driver.find_element_by_id("checkbox-rassemblement").click()
+            elif config.reason == 'demarche':
+                self.driver.find_element_by_id("checkbox-demarche").click()
         # button
         self.driver.find_element_by_id("generate-btn").click()
         time.sleep(1)
@@ -78,7 +93,7 @@ class Generator(object):
 
 class Config(object):
 
-    def __init__(self, user, first_name, last_name, birthday, placeofbirth, address, zipcode, city, reason, send=None, date=None, time=None):
+    def __init__(self, user, first_name, last_name, birthday, placeofbirth, address, zipcode, city, context, reason, send=None, date=None, time=None):
         self.user = user
         self.first_name = first_name
         self.last_name = last_name
@@ -87,6 +102,7 @@ class Config(object):
         self.address = address
         self.zipcode = str(zipcode)
         self.city = city
+        self.context = context
         self.reason = reason
         self.sender = send
         if not date:
@@ -115,8 +131,19 @@ class ConfigSchema(Schema):
         'animaux',
         'convocation',
         'missions',
-        'transits'
+        'transits',
+        'achats',
+        'sport',
+        'rassemblement',
+        'demarche'
     ]
+
+    available_context = [
+        'couvre-feu',
+        'confinement-weekend',
+        'confinement'
+    ]
+
     senders = ['telegram']
     telegram_options = ['chat_id', 'token']
 
@@ -128,6 +155,7 @@ class ConfigSchema(Schema):
     address = fields.Str(required=True)
     zipcode = fields.Int(required=True)
     city = fields.Str(required=True)
+    context = fields.Str(required=True, validate=validate.OneOf(available_context))
     reason = fields.Str(required=True, validate=validate.OneOf(available_reasons))
     send = fields.Dict(
         keys=fields.Str(
