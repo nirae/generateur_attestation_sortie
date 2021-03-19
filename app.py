@@ -56,7 +56,7 @@ class Generator(object):
         elif config.reason == 'handicap':
             self.driver.find_element_by_id("checkbox-handicap").click()
         elif config.reason == 'transits':
-            self.driver.find_element_by_id("checkbox-transits").click()
+            self.driver.find_element_by_id("checkbox-transit").click()
         elif config.reason == 'convocation':
             self.driver.find_element_by_id("checkbox-judiciaire").click()
         elif config.reason == 'missions':
