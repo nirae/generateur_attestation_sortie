@@ -17,31 +17,48 @@ from marshmallow import Schema, fields, validate, validates, post_load, Validati
 import argparse as arg
 
 
-available_reasons = {
-    'sante': 'checkbox-sante',
-    'famille': 'checkbox-famille',
-    'travail': 'checkbox-travail',
-    'handicap': 'checkbox-handicap',
-    'animaux': 'checkbox-animaux',
-    'convocation': 'checkbox-judiciaire',
-    'missions': 'checkbox-missions',
-    'transits': 'checkbox-transit',
-    'achats': 'checkbox-courses',
-    'sport': 'checkbox-sport',
-    'rassemblement': 'checkbox-rassemblement',
-    'demarche': 'checkbox-demarche'
-}
+available_reasons = [
+    'sante',
+    'famille',
+    'travail',
+    'handicap',
+    'animaux',
+    'convocation',
+    'missions',
+    'transits',
+    'achats',
+    'sport',
+    'demarche',
+    'demenagement'
+]
+
 
 available_curfew_reasons = {
-    'sante': 'checkbox-sante',
-    'famille': 'checkbox-famille',
-    'travail': 'checkbox-travail',
-    'handicap': 'checkbox-handicap',
-    'animaux': 'checkbox-animaux',
-    'convocation': 'checkbox-judiciaire',
-    'missions': 'checkbox-missions',
-    'transits': 'checkbox-transit'
+    'sante': 'checkbox-1-sante',
+    'famille': 'checkbox-2-famille',
+    'travail': 'checkbox-0-travail',
+    'handicap': 'checkbox-3-handicap',
+    'animaux': 'checkbox-7-animaux',
+    'convocation': 'checkbox-4-judiciaire',
+    'missions': 'checkbox-5-missions',
+    'transits': 'checkbox-6-transit'
 }
+
+available_quarantine_reasons = {
+    'sante': 'checkbox-9-sante',
+    'famille': 'checkbox-10-famille',
+    'travail': 'checkbox-8-travail',
+    'handicap': 'checkbox-11-handicap',
+    'convocation': 'checkbox-12-judiciaire',
+    'transits': 'checkbox-14-transit',
+    'sport': 'checkbox-1-sport',
+    'achats': 'checkbox-3-achats',
+    'enfants': 'checkbox-4-enfants',
+    'culte-culturel': 'checkbox-5-culte_culturel',
+    'demarche': 'checkbox-6-demarche',
+    'demenagement': 'checkbox-13-demenagement'
+}
+
 
 available_context = {
     'couvre-feu': 'curfew-button',
@@ -82,10 +99,10 @@ class Generator(object):
                 return None
             self.driver.find_element_by_id(available_curfew_reasons[config.reason]).click()
         elif config.context == 'confinement':
-            if not config.reason in available_reasons:
+            if not config.reason in available_quarantine_reasons:
                 print("%s is not available for %s" % (config.reason, config.context))
                 return None
-            self.driver.find_element_by_id(available_reasons[config.reason]).click()
+            self.driver.find_element_by_id(available_quarantine_reasons[config.reason]).click()
         # button
         self.driver.find_element_by_id("generate-btn").click()
         time.sleep(1)
@@ -148,7 +165,7 @@ class ConfigSchema(Schema):
     zipcode = fields.Int(required=True)
     city = fields.Str(required=True)
     context = fields.Str(required=True, validate=validate.OneOf(available_context.keys()))
-    reason = fields.Str(required=True, validate=validate.OneOf(available_reasons.keys()))
+    reason = fields.Str(required=True, validate=validate.OneOf(available_reasons))
     send = fields.Dict(
         keys=fields.Str(
             required=True,

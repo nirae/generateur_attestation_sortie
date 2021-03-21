@@ -77,20 +77,31 @@ La liste des `context` est:
 - `confinement-weekend`
 - `confinement`
 
-La liste des `reasons` est:
+La liste des `reasons` pour le contexte `couvre-feu` est:
 
-- `sante`
-- `famille`
-- `travail`
-- `handicap`
-- `animaux`
-- `convocation`
-- `missions`
-- `transits`
-- `achats`
-- `sport`
-- `rassemblement`
-- `demarche`
+- sante
+- famille
+- travail
+- handicap
+- animaux
+- convocation
+- missions
+- transits
+
+La liste des `reasons` pour le contexte `confinement` est:
+
+- sante
+- famille
+- travail
+- handicap
+- convocation
+- transits
+- sport
+- achats
+- enfants
+- culte-culturel
+- demarche
+- demenagement
 
 En fonction du type de contexte, certaines peuvent ne pas etre disponibles et générer une erreur.
 
