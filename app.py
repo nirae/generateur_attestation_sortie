@@ -9,19 +9,52 @@ import yaml
 import re
 import os
 import glob
+import string
+import random
 from datetime import datetime
 import time
 from marshmallow import Schema, fields, validate, validates, post_load, ValidationError
 import argparse as arg
 
 
+available_reasons = {
+    'sante': 'checkbox-sante',
+    'famille': 'checkbox-famille',
+    'travail': 'checkbox-travail',
+    'handicap': 'checkbox-handicap',
+    'animaux': 'checkbox-animaux',
+    'convocation': 'checkbox-judiciaire',
+    'missions': 'checkbox-missions',
+    'transits': 'checkbox-transit',
+    'achats': 'checkbox-courses',
+    'sport': 'checkbox-sport',
+    'rassemblement': 'checkbox-rassemblement',
+    'demarche': 'checkbox-demarche'
+}
+
+available_curfew_reasons = {
+    'sante': 'checkbox-sante',
+    'famille': 'checkbox-famille',
+    'travail': 'checkbox-travail',
+    'handicap': 'checkbox-handicap',
+    'animaux': 'checkbox-animaux',
+    'convocation': 'checkbox-judiciaire',
+    'missions': 'checkbox-missions',
+    'transits': 'checkbox-transit'
+}
+
+available_context = {
+    'couvre-feu': 'curfew-button',
+    'confinement': 'quarantine-button'
+}
+
+
 class Generator(object):
 
-    def __init__(self):
-        # self.url = "https://media.interieur.gouv.fr/deplacement-covid-19/"
+    def __init__(self, directory):
         self.url = "https://media.interieur.gouv.fr/attestation-couvre-feu-covid-19/"
         options = webdriver.ChromeOptions()
-        self.dir_path = os.getcwd() + '/'
+        self.dir_path = directory
         options.add_experimental_option("prefs", {"download.default_directory": self.dir_path, "intl.accept_languages": "fr"})
         options.add_argument('headless')
         options.add_argument('no-sandbox')
@@ -29,13 +62,9 @@ class Generator(object):
         self.driver = webdriver.Chrome(options=options)
 
     def run(self, config, output=None):
-        # self.driver.get("https://media.interieur.gouv.fr/deplacement-covid-19/")
         self.driver.get(self.url)
         # context selection button
-        if config.context == 'couvre-feu':
-            self.driver.find_element_by_class_name("curfew-button").click()
-        elif config.context == 'confinement-weekend' or config.context == 'confinement':
-            self.driver.find_element_by_class_name("quarantine-button").click()
+        self.driver.find_element_by_class_name(available_context[config.context]).click()
         # form
         self.driver.find_element_by_id("field-firstname").send_keys(config.first_name)
         self.driver.find_element_by_id("field-lastname").send_keys(config.last_name)
@@ -47,32 +76,16 @@ class Generator(object):
         self.driver.find_element_by_id("field-datesortie").send_keys(config.date)
         self.driver.find_element_by_id("field-heuresortie").send_keys(config.time)
         # checkboxs reasons
-        if config.reason == 'sante':
-            self.driver.find_element_by_id("checkbox-sante").click()
-        elif config.reason == 'famille':
-            self.driver.find_element_by_id("checkbox-famille").click()
-        elif config.reason == 'travail':
-            self.driver.find_element_by_id("checkbox-travail").click()
-        elif config.reason == 'handicap':
-            self.driver.find_element_by_id("checkbox-handicap").click()
-        elif config.reason == 'transits':
-            self.driver.find_element_by_id("checkbox-transit").click()
-        elif config.reason == 'convocation':
-            self.driver.find_element_by_id("checkbox-judiciaire").click()
-        elif config.reason == 'missions':
-            self.driver.find_element_by_id("checkbox-missions").click()
-        elif config.reason == 'animaux':
-            self.driver.find_element_by_id("checkbox-animaux").click()
-        
-        if config.context == 'confinement-weekend' or config.context == 'confinement':
-            if config.reason == 'achats':
-                self.driver.find_element_by_id("checkbox-courses").click()
-            elif config.reason == 'sport':
-                self.driver.find_element_by_id("checkbox-sport").click()
-            elif config.reason == 'rassemblement':
-                self.driver.find_element_by_id("checkbox-rassemblement").click()
-            elif config.reason == 'demarche':
-                self.driver.find_element_by_id("checkbox-demarche").click()
+        if config.context == 'couvre-feu':
+            if not config.reason in available_curfew_reasons:
+                print("%s is not available for %s" % (config.reason, config.context))
+                return None
+            self.driver.find_element_by_id(available_curfew_reasons[config.reason]).click()
+        elif config.context == 'confinement':
+            if not config.reason in available_reasons:
+                print("%s is not available for %s" % (config.reason, config.context))
+                return None
+            self.driver.find_element_by_id(available_reasons[config.reason]).click()
         # button
         self.driver.find_element_by_id("generate-btn").click()
         time.sleep(1)
@@ -123,27 +136,6 @@ class Config(object):
         return today.strftime("%H:%M")
 
 class ConfigSchema(Schema):
-    available_reasons = [
-        'sante',
-        'famille',
-        'travail',
-        'handicap',
-        'animaux',
-        'convocation',
-        'missions',
-        'transits',
-        'achats',
-        'sport',
-        'rassemblement',
-        'demarche'
-    ]
-
-    available_context = [
-        'couvre-feu',
-        'confinement-weekend',
-        'confinement'
-    ]
-
     senders = ['telegram']
     telegram_options = ['chat_id', 'token']
 
@@ -155,8 +147,8 @@ class ConfigSchema(Schema):
     address = fields.Str(required=True)
     zipcode = fields.Int(required=True)
     city = fields.Str(required=True)
-    context = fields.Str(required=True, validate=validate.OneOf(available_context))
-    reason = fields.Str(required=True, validate=validate.OneOf(available_reasons))
+    context = fields.Str(required=True, validate=validate.OneOf(available_context.keys()))
+    reason = fields.Str(required=True, validate=validate.OneOf(available_reasons.keys()))
     send = fields.Dict(
         keys=fields.Str(
             required=True,
@@ -221,7 +213,7 @@ class Sender(object):
             self.send_telegram(filename)
 
 def main(args):
-    gen = Generator()
+    gen = Generator(directory=os.getcwd()+'/')
     for conf in args.config:
         with open(conf) as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
@@ -238,7 +230,6 @@ def main(args):
             if config.sender:
                 sender = Sender(config.sender)
                 sender.send(filename)
-
     gen.close()
 
 if __name__ == "__main__":
