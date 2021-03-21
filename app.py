@@ -69,7 +69,7 @@ available_context = {
 class Generator(object):
 
     def __init__(self, directory):
-        self.url = "https://media.interieur.gouv.fr/attestation-couvre-feu-covid-19/"
+        self.url = "https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/"
         options = webdriver.ChromeOptions()
         self.dir_path = directory
         options.add_experimental_option("prefs", {"download.default_directory": self.dir_path, "intl.accept_languages": "fr"})
