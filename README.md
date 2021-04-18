@@ -22,6 +22,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -c CONFIG [CONFIG ...], --config CONFIG [CONFIG ...]
                         le/les fichier(s) de configuration (defaut: config.yml)
+  -o OUPUT_PATH
 ```
 
 l'option `-c` permet de préciser le nom du fichier de configuration yaml à utiliser. Il est possible d'en utiliser plusieurs en enchainant les noms
@@ -61,12 +62,11 @@ username:
   first_name: prénom
   last_name: nom
   birthday: 01/01/1990
-  placeofbirth: Place of birth
   address: 00 rue exemple
   zipcode: 75000
   city: City
   reason: achats
-  context: confinement-weekend
+  context: confinement
 ```
 
 L'attestation générée se nommera `username_attestation.pdf`
@@ -74,7 +74,6 @@ L'attestation générée se nommera `username_attestation.pdf`
 La liste des `context` est:
 
 - `couvre-feu`
-- `confinement-weekend`
 - `confinement`
 
 La liste des `reasons` pour le contexte `couvre-feu` est:
@@ -86,7 +85,6 @@ La liste des `reasons` pour le contexte `couvre-feu` est:
 - animaux
 - convocation
 - missions
-- transits
 
 La liste des `reasons` pour le contexte `confinement` est:
 
@@ -95,13 +93,14 @@ La liste des `reasons` pour le contexte `confinement` est:
 - travail
 - handicap
 - convocation
-- transits
 - sport
 - achats
 - enfants
 - culte-culturel
 - demarche
 - demenagement
+- animaux
+- missions
 
 En fonction du type de contexte, certaines peuvent ne pas etre disponibles et générer une erreur.
 
@@ -112,20 +111,20 @@ toto:
   first_name: toto
   last_name: nom
   birthday: 01/01/1990
-  placeofbirth: Place of birth
   address: 00 rue exemple
   zipcode: 75000
   city: City
   reason: achats
+  context: confinement
 tata:
   first_name: tata
   last_name: nom
   birthday: 01/01/1990
-  placeofbirth: Place of birth
   address: 00 rue exemple
   zipcode: 75000
   city: City
   reason: achats
+  context: confinement
 ```
 
 Pour envoyer l'attestation via **telegram**, il faut un bot telegram et les informations suivantes: 
@@ -142,11 +141,11 @@ toto:
   first_name: prénom
   last_name: nom
   birthday: 01/01/1990
-  placeofbirth: Place of birth
   address: 00 rue exemple
   zipcode: 75000
   city: City
   reason: achats
+  context: confinement
   send:
     telegram:
       token: '000000000:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
