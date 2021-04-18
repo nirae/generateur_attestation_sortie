@@ -123,7 +123,7 @@ class Generator(object):
 
 class Config(object):
 
-    def __init__(self, user, first_name, last_name, birthday, placeofbirth, address, zipcode, city, context, reason, send=None, date=None, time=None):
+    def __init__(self, user, first_name, last_name, birthday, address, zipcode, city, context, reason, send=None, date=None, time=None):
         self.user = user
         self.first_name = first_name
         self.last_name = last_name
