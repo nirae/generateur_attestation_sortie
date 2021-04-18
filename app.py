@@ -128,7 +128,6 @@ class Config(object):
         self.first_name = first_name
         self.last_name = last_name
         self.birthday = birthday
-        self.placeofbirth = placeofbirth
         self.address = address
         self.zipcode = str(zipcode)
         self.city = city
