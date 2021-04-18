@@ -160,7 +160,6 @@ class ConfigSchema(Schema):
     first_name = fields.Str(required=True)
     last_name = fields.Str(required=True)
     birthday = fields.Str(required=True)
-    placeofbirth = fields.Str(required=True)
     address = fields.Str(required=True)
     zipcode = fields.Int(required=True)
     city = fields.Str(required=True)
