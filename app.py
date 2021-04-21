@@ -25,38 +25,39 @@ available_reasons = [
     'animaux',
     'convocation',
     'missions',
-    'transits',
     'achats',
     'sport',
     'demarche',
-    'demenagement'
+    'demenagement',
+    'culte-culturel',
+    'enfants'
 ]
 
 
 available_curfew_reasons = {
-    'sante': 'checkbox-1-sante',
-    'famille': 'checkbox-2-famille',
-    'travail': 'checkbox-0-travail',
-    'handicap': 'checkbox-3-handicap',
-    'animaux': 'checkbox-7-animaux',
-    'convocation': 'checkbox-4-judiciaire',
-    'missions': 'checkbox-5-missions',
-    'transits': 'checkbox-6-transit'
+    'sante': 'checkbox-curfew-sante',
+    'famille': 'checkbox-curfew-famille',
+    'travail': 'checkbox-curfew-travail',
+    'handicap': 'checkbox-curfew-famille',
+    'animaux': 'checkbox-curfew-animaux',
+    'convocation': 'checkbox-curfew-convocation_demarches',
+    'missions': 'checkbox-curfew-travail'
 }
 
 available_quarantine_reasons = {
-    'sante': 'checkbox-9-sante',
-    'famille': 'checkbox-10-famille',
-    'travail': 'checkbox-8-travail',
-    'handicap': 'checkbox-11-handicap',
-    'convocation': 'checkbox-12-judiciaire',
-    'transits': 'checkbox-14-transit',
-    'sport': 'checkbox-1-sport',
-    'achats': 'checkbox-3-achats',
-    'enfants': 'checkbox-4-enfants',
-    'culte-culturel': 'checkbox-5-culte_culturel',
-    'demarche': 'checkbox-6-demarche',
-    'demenagement': 'checkbox-13-demenagement'
+    'sante': 'checkbox-quarantine-sante',
+    'famille': 'checkbox-quarantine-famille',
+    'travail': 'checkbox-quarantine-travail',
+    'handicap': 'checkbox-quarantine-famille',
+    'convocation': 'checkbox-quarantine-convocation_demarches',
+    'sport': 'checkbox-quarantine-sport',
+    'achats': 'checkbox-quarantine-achats_culte_culturel',
+    'enfants': 'checkbox-quarantine-famille',
+    'culte-culturel': 'checkbox-quarantine-achats_culte_culturel',
+    'demarche': 'checkbox-quarantine-convocation_demarches',
+    'demenagement': 'checkbox-quarantine-demenagement',
+    'animaux': 'checkbox-quarantine-sport',
+    'missions': 'checkbox-quarantine-travail'
 }
 
 
@@ -86,7 +87,6 @@ class Generator(object):
         self.driver.find_element_by_id("field-firstname").send_keys(config.first_name)
         self.driver.find_element_by_id("field-lastname").send_keys(config.last_name)
         self.driver.find_element_by_id("field-birthday").send_keys(config.birthday)
-        self.driver.find_element_by_id("field-placeofbirth").send_keys(config.placeofbirth)
         self.driver.find_element_by_id("field-address").send_keys(config.address)
         self.driver.find_element_by_id("field-city").send_keys(config.city)
         self.driver.find_element_by_id("field-zipcode").send_keys(config.zipcode)
@@ -123,12 +123,11 @@ class Generator(object):
 
 class Config(object):
 
-    def __init__(self, user, first_name, last_name, birthday, placeofbirth, address, zipcode, city, context, reason, send=None, date=None, time=None):
+    def __init__(self, user, first_name, last_name, birthday, address, zipcode, city, context, reason, send=None, date=None, time=None):
         self.user = user
         self.first_name = first_name
         self.last_name = last_name
         self.birthday = birthday
-        self.placeofbirth = placeofbirth
         self.address = address
         self.zipcode = str(zipcode)
         self.city = city
@@ -160,7 +159,6 @@ class ConfigSchema(Schema):
     first_name = fields.Str(required=True)
     last_name = fields.Str(required=True)
     birthday = fields.Str(required=True)
-    placeofbirth = fields.Str(required=True)
     address = fields.Str(required=True)
     zipcode = fields.Int(required=True)
     city = fields.Str(required=True)
